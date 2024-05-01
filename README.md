@@ -93,13 +93,4 @@ given file.
 2. You will have to learn the GCP CI/CD tools by yourselves. The tools are Cloud Source Repository, Cloud Build, and Artifact Registry.
 3. You will have to learn Terraform by yourselves and create a Terraform script to start your GKE cluster by running the script. You will be launching your GKE cluster by running the Terraform script from GCP Cloud Shell. 
 4. You must create a yaml file “xxxx.yaml” to deploy your application (workload) to the GKE cluster from the Cloud Shell.
-5. In order not to max out your GCP credit and make things consistent for the marking, you need to follow the configurations below to create your GKE cluster:
-  a. The GKE cluster is a standard cluster instead of an Autopilot cluster.
-  b. You only create 1 node for this cluster.
-  c. Choose “container-Optimized OS with containerd (cos_containerd) (default)” as the image type for the node.
-  d. Choose “E2” for Series.
-  e. Choose “e2-micro (2 vCPU, 1GB memory) for Machine type.
-  f. Choose “Standard persistent disk” for Boot disk type.
-  g. Enter “10” for Boot disk size.
-  h. Leave default for all other options.
 
