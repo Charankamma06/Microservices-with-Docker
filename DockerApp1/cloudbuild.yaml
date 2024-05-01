@@ -1,0 +1,41 @@
+steps:
+  # Step to build the Spring Boot application
+  - name: 'gcr.io/cloud-builders/mvn'
+    args: ['clean', 'install', '-DskipTests']
+    dir: './DockerApp1'
+
+  # Step to build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/csci5409-kubernetes-417610/dockerapp1/app1:$SHORT_SHA', '.']
+    dir: './DockerApp1'
+
+  # Step to push the Docker image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/csci5409-kubernetes-417610/dockerapp1/app1:$SHORT_SHA']
+
+  - id: apply-with-envsubst
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |      
+        sed -i "s|VERSION_SHA|$SHORT_SHA|g" DockerApp1/deployment.yaml    
+        cat DockerApp1/deployment.yaml
+
+  # Step to generate deployment.yaml
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: [ 'apply', '-f', 'deployment.yaml' ]
+    dir: './DockerApp1'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=dockerapp-cluster'
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+
+  # Step to generate pvc.yaml
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: [ 'apply', '-f', 'pvc.yaml' ]
+    dir: './DockerApp1'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=dockerapp-cluster'
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'

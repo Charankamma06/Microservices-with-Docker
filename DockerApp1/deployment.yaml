@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dockerapp1-workload
+  namespace: default
+  labels:
+    app: dockerapp1
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: dockerapp1
+  template:
+    metadata:
+      labels:
+        app: dockerapp1
+    spec:
+      containers:
+        - name: dockerapp1-container
+          image: us-central1-docker.pkg.dev/csci5409-kubernetes-417610/dockerapp1/app1:VERSION_SHA
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: shared-volume
+              mountPath: /vishaka_PV_dir
+      volumes:
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: k8s-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dockerapp1-service
+  namespace: default
+spec:
+  selector:
+    app: dockerapp1
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
